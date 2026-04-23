@@ -1,0 +1,43 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]: Local multiplayer
+        - generic [ref=e7]: 2 to 10 players
+        - generic [ref=e8]: 10 rounds max
+      - paragraph [ref=e9]: High Stakes Table
+      - heading "Dice Royale" [level=1] [ref=e10]
+      - paragraph [ref=e11]: Build the table, lock in the players, and run a clean local betting game with a sharper interface and less visual chaos.
+      - generic [ref=e12]:
+        - generic [ref=e13]:
+          - paragraph [ref=e14]: Starting stack
+          - paragraph [ref=e15]: "500"
+        - generic [ref=e16]:
+          - paragraph [ref=e17]: Elimination
+          - paragraph [ref=e18]: 0 pts
+        - generic [ref=e19]:
+          - paragraph [ref=e20]: Top payout
+          - paragraph [ref=e21]: 2x
+    - generic [ref=e22]:
+      - generic [ref=e23]:
+        - paragraph [ref=e24]: Game Setup
+        - heading "Start a fresh match" [level=2] [ref=e25]
+        - paragraph [ref=e26]: Pick player count first, then give each seat a unique name.
+      - generic [ref=e27]:
+        - generic [ref=e28]: Choose seats
+        - generic [ref=e29]:
+          - button "2" [ref=e30]
+          - button "3" [ref=e31]
+          - button "4" [ref=e32]
+          - button "5" [ref=e33]
+          - button "6" [ref=e34]
+          - button "7" [ref=e35]
+          - button "8" [ref=e36]
+          - button "9" [ref=e37]
+          - button "10" [ref=e38]
+        - generic [ref=e39]:
+          - paragraph [ref=e40]: Before you start
+          - paragraph [ref=e41]: Every player starts with 500 points. Anyone who drops to zero is out, and the biggest stack after 10 rounds wins.
+  - button "Open Next.js Dev Tools" [ref=e47] [cursor=pointer]:
+    - img [ref=e48]
+  - alert [ref=e51]

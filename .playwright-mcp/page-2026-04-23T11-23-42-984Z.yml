@@ -1,0 +1,18 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - paragraph [ref=e5]: Choose Mode
+      - heading "Dice Royale" [level=1] [ref=e6]
+      - paragraph [ref=e7]: Play locally on one screen, or launch a Liveblocks-backed room so everyone can join from their own device.
+    - generic [ref=e8]:
+      - button "Local Play here Pass the device around and run the match from a single screen." [ref=e9]:
+        - paragraph [ref=e10]: Local
+        - heading "Play here" [level=2] [ref=e11]
+        - paragraph [ref=e12]: Pass the device around and run the match from a single screen.
+      - button "Online Create or join a room Share an invite link, gather players into one live room, and let each player take their turn from their own system." [ref=e13]:
+        - paragraph [ref=e14]: Online
+        - heading "Create or join a room" [level=2] [ref=e15]
+        - paragraph [ref=e16]: Share an invite link, gather players into one live room, and let each player take their turn from their own system.
+  - button "Open Next.js Dev Tools" [ref=e22] [cursor=pointer]:
+    - img [ref=e23]
+  - alert [ref=e26]
