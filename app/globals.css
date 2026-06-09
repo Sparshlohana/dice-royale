@@ -319,6 +319,123 @@
   }
 }
 
+/* 3D dice */
+.dice-stage {
+  perspective: 900px;
+  perspective-origin: 50% 28%;
+  filter: drop-shadow(0 14px 12px rgba(2, 6, 23, 0.55));
+}
+
+.dice-cube {
+  position: relative;
+  height: 4.25rem;
+  width: 4.25rem;
+  transform-style: preserve-3d;
+  transform: rotateX(-20deg) rotateY(-20deg);
+  transition: transform 0.7s cubic-bezier(0.2, 0.85, 0.3, 1.1);
+}
+
+.dice-cube.is-rolling {
+  animation: dice-roll-3d 0.85s linear infinite;
+}
+
+.dice-cube.is-rolling-alt {
+  animation: dice-roll-3d-alt 0.95s linear infinite;
+}
+
+.dice-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 0.18rem;
+  padding: 0.62rem;
+  border-radius: 0.8rem;
+  background: linear-gradient(145deg, #ffffff 0%, #eef2f7 60%, #dde3ec 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.7),
+    inset 0 2px 4px rgba(255, 255, 255, 0.9),
+    inset 0 -7px 14px rgba(15, 23, 42, 0.12);
+  backface-visibility: hidden;
+}
+
+/* Per-face shading simulates a light source above-front for a solid 3D read. */
+.dice-face-top {
+  filter: brightness(1.08);
+}
+.dice-face-front {
+  filter: brightness(0.98);
+}
+.dice-face-left {
+  filter: brightness(0.82);
+}
+.dice-face-right {
+  filter: brightness(0.74);
+}
+.dice-face-back {
+  filter: brightness(0.66);
+}
+.dice-face-bottom {
+  filter: brightness(0.55);
+}
+
+.dice-face-front {
+  transform: rotateY(0deg) translateZ(2.125rem);
+}
+.dice-face-back {
+  transform: rotateY(180deg) translateZ(2.125rem);
+}
+.dice-face-right {
+  transform: rotateY(90deg) translateZ(2.125rem);
+}
+.dice-face-left {
+  transform: rotateY(-90deg) translateZ(2.125rem);
+}
+.dice-face-top {
+  transform: rotateX(90deg) translateZ(2.125rem);
+}
+.dice-face-bottom {
+  transform: rotateX(-90deg) translateZ(2.125rem);
+}
+
+.dice-pip {
+  align-self: center;
+  justify-self: center;
+  height: 0.7rem;
+  width: 0.7rem;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 34% 28%, #5b6b82 0%, #1e293b 55%, #0b1220 100%);
+  box-shadow:
+    inset 0 -1px 2px rgba(0, 0, 0, 0.55),
+    inset 0 1px 1px rgba(255, 255, 255, 0.4);
+}
+
+@keyframes dice-roll-3d {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(360deg) rotateY(360deg) rotateZ(180deg);
+  }
+}
+
+@keyframes dice-roll-3d-alt {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(-360deg) rotateY(360deg) rotateZ(-180deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dice-cube.is-rolling,
+  .dice-cube.is-rolling-alt {
+    animation-duration: 1.6s;
+  }
+}
+
 @layer utilities {
   @media (max-width: 640px) {
     .screen-shell {
