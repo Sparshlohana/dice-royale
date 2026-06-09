@@ -4,6 +4,7 @@ import { GameState } from "@/lib/types";
 import { getActivePlayers } from "@/lib/gameLogic";
 import { PlayerCard } from "./PlayerCard";
 import { Dice } from "./Dice";
+import { ScoreBoard } from "./ScoreBoard";
 
 interface GameBoardProps {
   gameState: GameState;
@@ -106,6 +107,8 @@ export function GameBoard({
             ) : null}
           </aside>
         </div>
+
+        <ScoreBoard gameState={gameState} />
       </div>
     </div>
   );

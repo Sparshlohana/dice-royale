@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { GameState } from "@/lib/types";
 import { getPoolInfo } from "@/lib/gameLogic";
+import { ScoreBoard } from "./ScoreBoard";
 
 interface BettingScreenProps {
   gameState: GameState;
@@ -152,6 +153,8 @@ export function BettingScreen({
             ) : null}
           </section>
         </div>
+
+        <ScoreBoard gameState={gameState} />
       </div>
     </div>
   );

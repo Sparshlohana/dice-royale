@@ -3,6 +3,7 @@
 import { GameState } from "@/lib/types";
 import { Dice } from "./Dice";
 import { getPoolInfo } from "@/lib/gameLogic";
+import { ScoreBoard } from "./ScoreBoard";
 
 interface ResultsScreenProps {
   gameState: GameState;
@@ -125,6 +126,8 @@ export function ResultsScreen({ gameState, onContinue }: ResultsScreenProps) {
             </button>
           </section>
         </div>
+
+        <ScoreBoard gameState={gameState} />
       </div>
     </div>
   );

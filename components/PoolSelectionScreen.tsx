@@ -2,6 +2,7 @@
 
 import { GameState, PoolType } from "@/lib/types";
 import { getPoolInfo } from "@/lib/gameLogic";
+import { ScoreBoard } from "./ScoreBoard";
 
 interface PoolSelectionScreenProps {
   gameState: GameState;
@@ -98,6 +99,8 @@ export function PoolSelectionScreen({
               </p>
             </div>
           ) : null}
+
+          <ScoreBoard gameState={gameState} />
         </div>
       </div>
     </div>
