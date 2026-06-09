@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { GameState } from "@/lib/types";
 import { Dice } from "./Dice";
 import { getPoolInfo } from "@/lib/gameLogic";
@@ -8,15 +9,40 @@ import { ScoreBoard } from "./ScoreBoard";
 interface ResultsScreenProps {
   gameState: GameState;
   onContinue: () => void;
+  // Only the player whose turn it is may advance. Defaults to true for the
+  // local hot-seat game where one device controls every turn.
+  canAdvance?: boolean;
+  waitingMessage?: string;
 }
 
-export function ResultsScreen({ gameState, onContinue }: ResultsScreenProps) {
+// Seconds players must view the result before continuing — keeps pace
+// from feeling rushed and lets everyone read the outcome.
+const CONTINUE_DELAY_SECONDS = 2;
+
+export function ResultsScreen({
+  gameState,
+  onContinue,
+  canAdvance = true,
+  waitingMessage,
+}: ResultsScreenProps) {
   const result = gameState.lastPlayerResult;
   const roll = gameState.lastDiceRoll;
+  const [countdown, setCountdown] = useState(CONTINUE_DELAY_SECONDS);
+
+  useEffect(() => {
+    setCountdown(CONTINUE_DELAY_SECONDS);
+    const interval = setInterval(() => {
+      setCountdown((value) => (value <= 1 ? 0 : value - 1));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [result?.playerId, result?.newPoints]);
 
   if (!result || !roll) {
     return <div>Error loading result</div>;
   }
+
+  const timerReady = countdown <= 0;
+  const canContinue = timerReady && canAdvance;
 
   const pool = getPoolInfo(result.selectedPool);
 
@@ -121,9 +147,25 @@ export function ResultsScreen({ gameState, onContinue }: ResultsScreenProps) {
               </div>
             )}
 
-            <button onClick={onContinue} className="button-primary mt-6 w-full px-5 py-4 text-lg">
-              Continue
+            <button
+              onClick={onContinue}
+              disabled={!canContinue}
+              className="button-primary mt-6 w-full px-5 py-4 text-lg"
+            >
+              {!canAdvance
+                ? "Waiting for player"
+                : timerReady
+                  ? "Continue"
+                  : `Continue in ${countdown}s`}
             </button>
+
+            {!canAdvance && waitingMessage ? (
+              <div className="mt-4 rounded-[1.5rem] border border-cyan-300/20 bg-cyan-300/10 px-4 py-3">
+                <p className="text-sm font-semibold text-cyan-100">
+                  {waitingMessage}
+                </p>
+              </div>
+            ) : null}
           </section>
         </div>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { GameState, Player } from "@/lib/types";
+import { GameState, Player, PlayerTurnResult } from "@/lib/types";
 import { getLeaderboard, getPoolInfo } from "@/lib/gameLogic";
 
 interface ScoreBoardProps {
@@ -121,8 +121,22 @@ interface StatsModalProps {
 }
 
 function StatsModal({ gameState, onClose }: StatsModalProps) {
+  const [tab, setTab] = useState<"standings" | "history">("history");
   const leaderboard = getLeaderboard(gameState.players);
   const activePlayer = gameState.players[gameState.currentPlayerIndex] ?? null;
+
+  // Group every recorded turn by round, latest round first.
+  const history = gameState.turnHistory ?? [];
+  const rounds = new Map<number, PlayerTurnResult[]>();
+  for (const turn of history) {
+    const bucket = rounds.get(turn.round);
+    if (bucket) {
+      bucket.push(turn);
+    } else {
+      rounds.set(turn.round, [turn]);
+    }
+  }
+  const roundNumbers = Array.from(rounds.keys()).sort((a, b) => b - a);
 
   return (
     <div
@@ -133,10 +147,10 @@ function StatsModal({ gameState, onClose }: StatsModalProps) {
         className="glass-panel-strong max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-[2rem] p-6 sm:p-8"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="mb-6 flex items-start justify-between gap-4">
+        <div className="mb-5 flex items-start justify-between gap-4">
           <div>
             <p className="eyebrow mb-2">Round {gameState.currentRound} of 10</p>
-            <h2 className="text-3xl font-extrabold text-white">Player stats</h2>
+            <h2 className="text-3xl font-extrabold text-white">Game stats</h2>
             {activePlayer ? (
               <p className="muted mt-2 text-sm">
                 <span className="font-semibold text-cyan-200">
@@ -155,79 +169,167 @@ function StatsModal({ gameState, onClose }: StatsModalProps) {
           </button>
         </div>
 
-        <div className="space-y-3">
-          {leaderboard.map((player) => {
-            const isActive = player.id === activePlayer?.id;
-            const isEliminated = player.status === "eliminated";
-            return (
-              <div
-                key={player.id}
-                className={`
-                  rounded-[1.5rem] border p-4
-                  ${isActive ? "border-cyan-300/50 bg-cyan-300/10" : "border-white/10 bg-white/[0.03]"}
-                  ${isEliminated ? "opacity-65" : ""}
-                `}
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`
-                        flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-sm font-black
-                        ${player.rank === 1 ? "bg-amber-300 text-slate-900" : "bg-white/10 text-white"}
-                      `}
-                    >
-                      {player.rank}
-                    </div>
-                    <div>
-                      <p className="text-lg font-extrabold text-white">
-                        {player.name}
-                      </p>
-                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/45">
-                        {isEliminated ? "Eliminated" : "Active"}
-                        {isActive ? " · Turn" : ""}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-2xl font-extrabold text-cyan-300">
-                    {player.points}
-                    <span className="ml-1 text-xs text-white/40">pts</span>
-                  </p>
-                </div>
+        <div className="mb-5 flex gap-2">
+          <button
+            type="button"
+            onClick={() => setTab("history")}
+            className={`rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] transition-colors ${
+              tab === "history"
+                ? "bg-cyan-300/20 text-cyan-100"
+                : "bg-white/5 text-white/55 hover:text-white"
+            }`}
+          >
+            Turn history
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab("standings")}
+            className={`rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] transition-colors ${
+              tab === "standings"
+                ? "bg-cyan-300/20 text-cyan-100"
+                : "bg-white/5 text-white/55 hover:text-white"
+            }`}
+          >
+            Standings
+          </button>
+        </div>
 
-                <div className="mt-4 grid grid-cols-3 gap-3">
-                  <div className="rounded-2xl border border-white/8 bg-black/10 px-3 py-2">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/40">
-                      Pool
-                    </p>
-                    <p className="mt-1 text-sm font-extrabold text-white">
-                      {poolLabel(player)}
+        {tab === "standings" ? (
+          <div className="space-y-3">
+            {leaderboard.map((player) => {
+              const isActive = player.id === activePlayer?.id;
+              const isEliminated = player.status === "eliminated";
+              return (
+                <div
+                  key={player.id}
+                  className={`
+                    rounded-[1.5rem] border p-4
+                    ${isActive ? "border-cyan-300/50 bg-cyan-300/10" : "border-white/10 bg-white/[0.03]"}
+                    ${isEliminated ? "opacity-65" : ""}
+                  `}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`
+                          flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-sm font-black
+                          ${player.rank === 1 ? "bg-amber-300 text-slate-900" : "bg-white/10 text-white"}
+                        `}
+                      >
+                        {player.rank}
+                      </div>
+                      <div>
+                        <p className="text-lg font-extrabold text-white">
+                          {player.name}
+                        </p>
+                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/45">
+                          {isEliminated ? "Eliminated" : "Active"}
+                          {isActive ? " · Turn" : ""}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-2xl font-extrabold text-cyan-300">
+                      {player.points}
+                      <span className="ml-1 text-xs text-white/40">pts</span>
                     </p>
                   </div>
-                  <div className="rounded-2xl border border-white/8 bg-black/10 px-3 py-2">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/40">
-                      Bet
-                    </p>
-                    <p className="mt-1 text-sm font-extrabold text-white">
-                      {player.current_round_bet && player.current_round_bet > 0
-                        ? player.current_round_bet
-                        : "—"}
-                    </p>
+
+                  <div className="mt-4 grid grid-cols-3 gap-3">
+                    <div className="rounded-2xl border border-white/8 bg-black/10 px-3 py-2">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/40">
+                        Pool
+                      </p>
+                      <p className="mt-1 text-sm font-extrabold text-white">
+                        {poolLabel(player)}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-white/8 bg-black/10 px-3 py-2">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/40">
+                        Bet
+                      </p>
+                      <p className="mt-1 text-sm font-extrabold text-white">
+                        {player.current_round_bet && player.current_round_bet > 0
+                          ? player.current_round_bet
+                          : "—"}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-white/8 bg-black/10 px-3 py-2">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/40">
+                        Out at
+                      </p>
+                      <p className="mt-1 text-sm font-extrabold text-white">
+                        {player.eliminated_at_round
+                          ? `R${player.eliminated_at_round}`
+                          : "—"}
+                      </p>
+                    </div>
                   </div>
-                  <div className="rounded-2xl border border-white/8 bg-black/10 px-3 py-2">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/40">
-                      Out at
-                    </p>
-                    <p className="mt-1 text-sm font-extrabold text-white">
-                      {player.eliminated_at_round
-                        ? `R${player.eliminated_at_round}`
-                        : "—"}
-                    </p>
-                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : roundNumbers.length === 0 ? (
+          <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-6 text-center">
+            <p className="muted text-sm">No turns played yet.</p>
+          </div>
+        ) : (
+          <div className="space-y-5">
+            {roundNumbers.map((roundNo) => (
+              <div key={roundNo}>
+                <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-white/45">
+                  Round {roundNo}
+                </p>
+                <div className="space-y-2">
+                  {(rounds.get(roundNo) ?? []).map((turn, idx) => {
+                    const pool = getPoolInfo(turn.selectedPool);
+                    return (
+                      <div
+                        key={`${turn.playerId}-${roundNo}-${idx}`}
+                        className="flex items-center justify-between gap-3 rounded-2xl border border-white/8 bg-black/10 px-4 py-3"
+                      >
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-extrabold text-white">
+                            {turn.playerName}
+                          </p>
+                          <p className="mt-0.5 text-[11px] font-semibold text-white/50">
+                            {pool.name} · bet {turn.bet} · rolled {turn.diceSum}
+                            {turn.eliminated ? " · eliminated" : ""}
+                          </p>
+                        </div>
+                        <div className="flex flex-shrink-0 items-center gap-3">
+                          <span
+                            className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] ${
+                              turn.won
+                                ? "bg-emerald-400/15 text-emerald-300"
+                                : "bg-rose-500/15 text-rose-300"
+                            }`}
+                          >
+                            {turn.won ? "Won" : "Lost"}
+                          </span>
+                          <div className="text-right">
+                            <p
+                              className={`text-sm font-extrabold ${
+                                turn.pointsChange >= 0
+                                  ? "text-emerald-300"
+                                  : "text-rose-300"
+                              }`}
+                            >
+                              {turn.pointsChange > 0 ? "+" : ""}
+                              {turn.pointsChange}
+                            </p>
+                            <p className="text-[10px] font-semibold text-white/40">
+                              → {turn.newPoints}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -258,7 +258,13 @@ function OnlineRoomContent({
       }
 
       const diceRoll = rollDice();
-      const result = processPlayerTurn(currentPlayer, selectedPool, bet, diceRoll);
+      const result = processPlayerTurn(
+        currentPlayer,
+        selectedPool,
+        bet,
+        diceRoll,
+        gameState.currentRound,
+      );
       const updatedPlayers = [...gameState.players];
       updatedPlayers[gameState.currentPlayerIndex] = {
         ...updatedPlayers[gameState.currentPlayerIndex],
@@ -276,6 +282,8 @@ function OnlineRoomContent({
             players: updatedPlayers,
             lastDiceRoll: diceRoll,
             lastPlayerResult: result,
+            roundResults: [...gameState.roundResults, result],
+            turnHistory: [...gameState.turnHistory, result],
             gameStatus: "playerResults",
           },
         } satisfies SharedRoomState),
@@ -294,6 +302,12 @@ function OnlineRoomContent({
       const currentState = parseRoomState(serialized);
       const gameState = currentState?.gameState;
       if (!currentState || !gameState || gameState.gameStatus !== "playerResults") {
+        return;
+      }
+
+      // Only the player whose turn it is may advance the game.
+      const activePlayer = gameState.players[gameState.currentPlayerIndex];
+      if (!activePlayer || activePlayer.id !== identity.userId) {
         return;
       }
 
@@ -347,7 +361,7 @@ function OnlineRoomContent({
         } satisfies SharedRoomState),
       );
     },
-    [],
+    [identity.userId],
   );
 
   const restartRoom = useMutation(
@@ -414,7 +428,7 @@ function OnlineRoomContent({
     }
 
     setIsRolling(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     finishRoll();
     setIsRolling(false);
   };
@@ -647,7 +661,12 @@ function OnlineRoomContent({
     return (
       <>
         {onlineBanner}
-        <ResultsScreen gameState={gameState} onContinue={continueTurn} />
+        <ResultsScreen
+          gameState={gameState}
+          onContinue={continueTurn}
+          canAdvance={isCurrentPlayersTurn}
+          waitingMessage={waitingMessage}
+        />
       </>
     );
   }

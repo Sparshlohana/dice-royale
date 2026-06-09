@@ -205,7 +205,7 @@ export default function Home() {
   if (gameState.gameStatus === "rolling") {
     const handleRoll = async () => {
       setIsRolling(true);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       const currentPlayer = gameState.players[gameState.currentPlayerIndex];
       const selectedPool = currentPlayer.selected_pool;
@@ -222,6 +222,7 @@ export default function Home() {
         selectedPool,
         bet,
         diceRoll,
+        gameState.currentRound,
       );
 
       const updatedPlayers = [...gameState.players];
@@ -237,6 +238,8 @@ export default function Home() {
         players: updatedPlayers,
         lastDiceRoll: diceRoll,
         lastPlayerResult: result,
+        roundResults: [...(gameState.roundResults ?? []), result],
+        turnHistory: [...(gameState.turnHistory ?? []), result],
         gameStatus: "playerResults",
       });
       setIsRolling(false);

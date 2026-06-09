@@ -37,6 +37,7 @@ export function initializeGame(playerNames: string[]): GameState {
     lastDiceRoll: null,
     lastPlayerResult: null,
     roundResults: [],
+    turnHistory: [],
   };
 }
 
@@ -58,6 +59,7 @@ export function initializeGameFromPlayers(
     lastDiceRoll: null,
     lastPlayerResult: null,
     roundResults: [],
+    turnHistory: [],
   };
 }
 
@@ -114,6 +116,7 @@ export function processPlayerTurn(
   poolType: PoolType,
   bet: number,
   diceRoll: DiceRoll,
+  round: number,
 ): PlayerTurnResult {
   const pool = getPoolInfo(poolType);
   const won = checkPoolWin(poolType, diceRoll.sum);
@@ -123,6 +126,7 @@ export function processPlayerTurn(
   const eliminated = newPoints <= 0;
 
   return {
+    round,
     playerId: player.id,
     playerName: player.name,
     selectedPool: poolType,

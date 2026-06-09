@@ -26,6 +26,7 @@ export interface DiceRoll {
 }
 
 export interface PlayerTurnResult {
+  round: number;
   playerId: string;
   playerName: string;
   selectedPool: PoolType;
@@ -47,6 +48,7 @@ export interface GameState {
   lastDiceRoll: DiceRoll | null;
   lastPlayerResult: PlayerTurnResult | null;
   roundResults: PlayerTurnResult[]; // all results for current round
+  turnHistory: PlayerTurnResult[]; // every turn across all rounds (never reset mid-game)
 }
 
 export interface OnlineIdentity {
