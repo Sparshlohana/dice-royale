@@ -406,7 +406,7 @@ function OnlineRoomContent({
   if (!roomState) {
     return (
       <div className="screen-shell flex items-center justify-center">
-        <div className="glass-panel rounded-[2rem] px-6 py-5">
+        <div className="glass-panel rounded-4xl px-6 py-5">
           <p className="text-sm font-semibold text-white">Loading room...</p>
         </div>
       </div>

@@ -3,11 +3,13 @@
 interface ModeSelectionScreenProps {
   onSelectLocal: () => void;
   onSelectOnline: () => void;
+  onSelectCash: () => void;
 }
 
 export function ModeSelectionScreen({
   onSelectLocal,
   onSelectOnline,
+  onSelectCash,
 }: ModeSelectionScreenProps) {
   return (
     <div className="screen-shell flex items-center">
@@ -46,6 +48,21 @@ export function ModeSelectionScreen({
             <p className="muted mt-3 text-sm leading-6">
               Share an invite link, gather players into one live room, and let
               each player take their turn from their own system.
+            </p>
+          </button>
+
+          <button
+            onClick={onSelectCash}
+            className="glass-panel rounded-[2rem] border border-emerald-400/25 p-6 text-left"
+          >
+            <p className="eyebrow mb-3 text-emerald-300">Cash game</p>
+            <h2 className="text-3xl font-extrabold text-white">
+              Play for real money
+            </h2>
+            <p className="muted mt-3 text-sm leading-6">
+              Buy in with real cash, tracked as numbers only. Zero-sum pots —
+              winners split the losers&apos; stakes and the app shows exactly who
+              pays whom at the end. It never holds or takes a cent.
             </p>
           </button>
         </section>

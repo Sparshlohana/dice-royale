@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CashGame } from "@/components/CashGame";
 import { ModeSelectionScreen } from "@/components/ModeSelectionScreen";
 import { OnlineRoomExperience } from "@/components/OnlineRoomExperience";
 import { OnlineSetupScreen } from "@/components/OnlineSetupScreen";
@@ -38,7 +39,9 @@ export default function Home() {
   const { gameState, setGameState, startNewGame, resetGame, isLoaded } =
     useGameState();
   const [isRolling, setIsRolling] = useState(false);
-  const [mode, setMode] = useState<"menu" | "local" | "online">("menu");
+  const [mode, setMode] = useState<"menu" | "local" | "online" | "cash">(
+    "menu",
+  );
   const [onlineIdentity, setOnlineIdentity] = useState<OnlineIdentity | null>(
     null,
   );
@@ -138,11 +141,16 @@ export default function Home() {
     );
   }
 
+  if (mode === "cash") {
+    return <CashGame onExit={() => setMode("menu")} />;
+  }
+
   if (!gameState && mode === "menu") {
     return (
       <ModeSelectionScreen
         onSelectLocal={() => setMode("local")}
         onSelectOnline={() => setMode("online")}
+        onSelectCash={() => setMode("cash")}
       />
     );
   }
